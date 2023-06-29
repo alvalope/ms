@@ -6,7 +6,7 @@
 /*   By: alvalope <alvalope@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/20 12:57:41 by alvalope          #+#    #+#             */
-/*   Updated: 2023/06/29 12:13:51 by alvalope         ###   ########.fr       */
+/*   Updated: 2023/06/29 14:39:07 by alvalope         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	main(int argc, char *argv[])
 	int		cmd;
 	int		args;
 
+	char *paths = ft_split("/Users/alvalope/.brew/bin:/Users/alvalope/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/usr/local/munki:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/alvalope/.brew/bin", ":");
 	/*argc = 12;
 	argv[1] = "<";
 	argv[2] = "asd.txt";
@@ -102,7 +103,7 @@ int	main(int argc, char *argv[])
 	else
 	{
 		pipes = ft_count_pipes(argv, argc - 1);
-		ft_reserve_memory(&p, pipes + 1, ft_count_max_args(argv, argc));
+		ft_reserve_memory(&p, pipes + 1, ft_count_max_args(argv, argc, i));
 		ft_count_args(argv, argc, &p);
 		i = 1;
 		cmd = 0;
@@ -114,16 +115,16 @@ int	main(int argc, char *argv[])
 				p.infile[cmd] = argv[i + 1];
 				i += 2;
 			}
-			else if (strncmp(argv[i], "<<\0", 3) == 0
-				&& strncmp(argv[i], "HERE_DOC\0", 9) == 0)
+			else if (strncmp(argv[i], "<<\0", 3) == 0)
 			{
-				p.infile[cmd] = argv[i + 1];
+				p.infile[cmd] = "HEREDOC";
 				i += 2;
 			}
-			if (strncmp(argv[i], "ls", 2) == 0)
-				p.paths[cmd] = ft_strjoin("/bin/", argv[i]);/***/
+			p.paths[cmd] = ft_check_comm(paths, argv[i]);
+			/*if (strncmp(argv[i], "ls", 2) == 0)
+				p.paths[cmd] = ft_strjoin("/bin/", argv[i]);
 			else
-				p.paths[cmd] = ft_strjoin("/usr/bin/", argv[i]);/***/
+				p.paths[cmd] = ft_strjoin("/usr/bin/", argv[i]);*/
 			p.args[cmd][args] = argv[i];
 			i++;
 			while (i < argc && strncmp(argv[i], "|\0", 2) != 0)

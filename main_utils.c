@@ -6,7 +6,7 @@
 /*   By: alvalope <alvalope@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 12:12:37 by alvalope          #+#    #+#             */
-/*   Updated: 2023/06/29 12:19:28 by alvalope         ###   ########.fr       */
+/*   Updated: 2023/06/29 14:36:14 by alvalope         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_reserve_memory(t_pipex *p, int argc, int max_args)
 	p->n_args = ft_calloc(sizeof(int), argc);
 }
 
-void	ft_check_command(t_pipex *p, char *command, int i)
+/*void	ft_check_command(t_pipex *p, char *command, int i)
 {
 	p->args[i] = ft_split_quote(command, ' ');
 	p->paths[i] = ft_strjoin("/bin/", p->args[i][0]);
@@ -44,9 +44,9 @@ void	ft_check_command(t_pipex *p, char *command, int i)
 			p->command_not_found[i] = 1;
 		}
 	}
-}
+}*/
 
-void	ft_check_comm(t_pipex *p, char **paths, char *command)
+void	ft_check_comm(char **paths, char *command)
 {
 	int	i;
 	int	aux;
@@ -54,9 +54,14 @@ void	ft_check_comm(t_pipex *p, char **paths, char *command)
 	i = 0;
 	while (paths[i])
 	{
-		
+		aux = ft_strjoin(paths[i], command);
+		if (!access(aux, F_OK && X_OK))
+		{
+			return (aux);
+		}
 		i++;
 	}
+	return (0);
 }
 
 int	ft_count_pipes(char *argv[], int n)
@@ -73,9 +78,8 @@ int	ft_count_pipes(char *argv[], int n)
 	return (pipes);
 }
 
-int	ft_count_max_args(char *argv[], int n)
+int	ft_count_max_args(char *argv[], int n, int i)
 {
-	int	i;
 	int	max_args;
 	int	args;
 
@@ -86,6 +90,12 @@ int	ft_count_max_args(char *argv[], int n)
 	{
 		if (strncmp(argv[i], "|\0", 2) == 0)
 			args = 0;
+		else if (strncmp(argv[i], "<\0", 2) == 0
+			|| strncmp(argv[i], "<<\0", 2) == 0)
+			i += 1;
+		else if (strncmp(argv[i], ">\0", 2) == 0
+			|| strncmp(argv[i], ">>\0", 2) == 0)
+			i += 1;
 		else
 		{
 			args++;
